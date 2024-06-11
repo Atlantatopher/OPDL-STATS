@@ -4,10 +4,12 @@ import com.opdl.api.stats.exception.ResourceNotFoundException;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Quality;
 import com.opdl.api.stats.repository.QualityRepository;
+import com.opdl.api.stats.service.QualityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +22,25 @@ public class QualityController {
     @Autowired
     private QualityRepository qualityRepository;
 
-    // get all Bars
+    @Autowired
+    private QualityService qualityService;
+
+    // get all Quality points
     @GetMapping("/qualitys")
     public List<Quality> getAllQualitys(){
         return qualityRepository.findAll();
     }
 
     // create Quality rest api
-    @PostMapping("/qualitys")
+    @PostMapping("/quality")
     public Quality createQuality(@RequestBody Quality quality) {
         return qualityRepository.save(quality);
+    }
+
+    // create Quality rest api
+    @PostMapping("/qualities/update")
+    public List<Quality> createQualities(@RequestBody List<Quality> qualities) {
+        return qualityRepository.saveAll(qualities);
     }
 
     // get Quality by id rest api
@@ -45,6 +56,20 @@ public class QualityController {
         List<Quality> quality = qualityRepository.findByPlayer(new Player(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Quality not exist with player id :" + id));
         return ResponseEntity.ok(quality);
+    }
+
+    // get quality points by match
+    @PostMapping("/qualities/get")
+    public ResponseEntity<List<Quality>> geQualityByDetails(@RequestBody Quality quality){
+        List<Quality> results =  new ArrayList<Quality>();
+
+        try {
+            results = qualityService.getquery(quality);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/qualitys/{id}")

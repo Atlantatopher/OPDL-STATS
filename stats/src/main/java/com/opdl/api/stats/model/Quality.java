@@ -57,6 +57,9 @@ public class Quality {
     @Column(name = "cork_3")
     private int numCork3 = 0;
 
+    @Transient
+    private int total = 0;
+
     public Quality() {
     }
 
@@ -205,6 +208,14 @@ public class Quality {
 
     public void setNumCork3(int numCork3) {
         this.numCork3 = numCork3;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     @Override
