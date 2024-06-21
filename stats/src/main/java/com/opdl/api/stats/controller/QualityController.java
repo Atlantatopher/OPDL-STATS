@@ -72,6 +72,32 @@ public class QualityController {
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
+    @GetMapping("/quality/player/{playerId}")
+    public ResponseEntity<List<Quality>> gePlayerWithQuality(@PathVariable Long playerId){
+        List<Quality> results =  new ArrayList<Quality>();
+
+        try {
+            results = qualityService.getPlayerWithQuality(playerId);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/team/{teamId}")
+    public ResponseEntity<List<Quality>> geTeamWithQuality(@PathVariable Long teamId){
+        List<Quality> results =  new ArrayList<Quality>();
+
+        try {
+            results = qualityService.getTeamWithQuality(teamId);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
     @PutMapping("/qualitys/{id}")
     public ResponseEntity<Quality> updateQuality(@PathVariable Long id, @RequestBody Quality qualityDetails){
         Quality quality = qualityRepository.findById(id)

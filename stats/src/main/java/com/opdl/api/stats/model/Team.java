@@ -20,6 +20,10 @@ public class Team {
     @OneToOne
     private Bar homeBar;
 
+    @OneToOne
+    @JoinColumn(name="team_id")
+    private Player player;
+
     public Team() {
     }
 

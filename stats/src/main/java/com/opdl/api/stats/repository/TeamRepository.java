@@ -1,15 +1,15 @@
 package com.opdl.api.stats.repository;
 
 import com.opdl.api.stats.model.Bar;
-import com.opdl.api.stats.model.Quality;
-import com.opdl.api.stats.model.Schedule;
 import com.opdl.api.stats.model.Team;
+import com.opdl.api.stats.specification.TeamSpecifications;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TeamRepository extends JpaRepository<Team, Long> {
+public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificationExecutor<TeamSpecifications> {
 
     Optional<List<Team>> findBySeasonIdOrderById(long seasonId);
 

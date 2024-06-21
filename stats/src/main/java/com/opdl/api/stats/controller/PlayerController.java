@@ -65,6 +65,32 @@ public class PlayerController {
         return ResponseEntity.ok(player);
     }
 
+    @GetMapping("/players/team/{teamId}")
+    public ResponseEntity<List<Player>> gePlayerByTeam(@PathVariable Long teamId){
+        List<Player> results =  new ArrayList<Player>();
+
+        try {
+            results = playerService.getPlayersForTeam(teamId);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/player/quality/{playerId}")
+    public ResponseEntity<List<Player>> gePlayerWithQuality(@PathVariable Long playerId){
+        List<Player> results =  new ArrayList<Player>();
+
+        try {
+            results = playerService.getPlayerWithQuality(playerId);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
     @PutMapping("/players/{id}")
     public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails){
         Player player = playerRepository.findById(id)

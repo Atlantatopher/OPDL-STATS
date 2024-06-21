@@ -1,14 +1,14 @@
 package com.opdl.api.stats.repository;
 
-import com.opdl.api.stats.model.Game;
-import com.opdl.api.stats.model.Player;;
+import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PlayerRepository extends JpaRepository<Player, Long> {
+public interface PlayerRepository extends JpaRepository<Player, Long>, JpaSpecificationExecutor<Player> {
 
     Optional<List<Player>> findBySeasonId(long seasonId);
 

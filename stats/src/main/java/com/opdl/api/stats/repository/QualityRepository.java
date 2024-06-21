@@ -4,11 +4,12 @@ import com.opdl.api.stats.model.Match;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Quality;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface QualityRepository extends JpaRepository<Quality, Long> {
+public interface QualityRepository extends JpaRepository<Quality, Long>, JpaSpecificationExecutor<Quality> {
 
     Optional<List<Quality>> findBySeasonId(long seasonId);
 

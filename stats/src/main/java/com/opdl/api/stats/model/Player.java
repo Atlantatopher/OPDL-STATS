@@ -2,6 +2,7 @@ package com.opdl.api.stats.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -31,6 +32,9 @@ public class Player {
 
     @OneToOne(cascade = CascadeType.MERGE)
     private Team team;
+
+    @OneToMany(mappedBy = "player")
+    private List<Quality> quality;
 
     public Player() {
     }

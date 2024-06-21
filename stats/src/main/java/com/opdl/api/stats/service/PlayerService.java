@@ -3,7 +3,9 @@ package com.opdl.api.stats.service;
 import com.opdl.api.stats.exception.ResourceNotFoundException;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.repository.PlayerRepository;
+import com.opdl.api.stats.specification.PlayerSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,4 +48,19 @@ public class PlayerService {
         }
         return results;
     }
+
+    public List<Player> getPlayerWithQuality(long playerId) throws ResourceNotFoundException{
+        List<Player> results = new ArrayList<>();
+        Specification<Player> spec = PlayerSpecifications.hasPlayerWithQuality(playerId);
+        results = playerRepository.findAll(spec);
+        return results;
+    }
+
+    public List<Player> getPlayersForTeam(long  teamId) throws ResourceNotFoundException{
+        List<Player> results = new ArrayList<>();
+        Specification<Player> spec = PlayerSpecifications.belongsToTeam(teamId);
+        results.addAll(playerRepository.findAll(spec));
+        return results;
+    }
+
 }

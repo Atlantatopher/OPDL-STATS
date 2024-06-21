@@ -1,17 +1,15 @@
 package com.opdl.api.stats.service;
 
 import com.opdl.api.stats.exception.ResourceNotFoundException;
-import com.opdl.api.stats.model.Game;
-import com.opdl.api.stats.model.Match;
 import com.opdl.api.stats.model.Quality;
-import com.opdl.api.stats.repository.MatchRepository;
 import com.opdl.api.stats.repository.QualityRepository;
+import com.opdl.api.stats.specification.QualitySpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +42,20 @@ public class QualityService {
             // do we want to throw an error or return everything in teh DB. Not wanting to return everything in the DB.
         }
         results = (ArrayList<Quality>) results.stream().map(this::calculateTotal).collect(Collectors.toList());
+        return results;
+    }
+
+    public List<Quality> getPlayerWithQuality(long playerId) throws ResourceNotFoundException{
+        List<Quality> results = new ArrayList<>();
+        Specification<Quality> spec = QualitySpecifications.hasPlayerWithQuality(playerId);
+        results = qualityRepository.findAll(spec);
+        return results;
+    }
+
+    public List<Quality> getTeamWithQuality(long teamId) throws ResourceNotFoundException{
+        List<Quality> results = new ArrayList<>();
+        Specification<Quality> spec = QualitySpecifications.hasTeamWithQuality(teamId);
+        results = qualityRepository.findAll(spec);
         return results;
     }
 

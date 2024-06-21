@@ -18,7 +18,7 @@ public class Quality {
     @OneToOne
     private Match match;
 
-    @OneToOne
+    @ManyToOne
     private Player player;
 
     @Column(name = "ton_80")
