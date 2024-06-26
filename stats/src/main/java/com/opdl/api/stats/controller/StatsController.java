@@ -4,6 +4,7 @@ import com.opdl.api.stats.exception.ResourceNotFoundException;
 import com.opdl.api.stats.model.*;
 import com.opdl.api.stats.service.GameService;
 import com.opdl.api.stats.service.MatchService;
+import com.opdl.api.stats.service.PlayerService;
 import com.opdl.api.stats.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class StatsController {
 
     @Autowired
     private GameService gameService;
+
+    @Autowired
+    private PlayerService playerService;
 
     @PostMapping("/stats/standings/team")
     public ResponseEntity<List<TeamStandings>> getTeamStandings(@RequestBody StandingsQuery query){
@@ -160,6 +164,26 @@ public class StatsController {
         //ArrayList<PlayerStats> finalResults = new ArrayList<PlayerStats>();
         Collections.sort(results);
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/stats/players/eligible")
+    public ResponseEntity<HashMap<Player, Integer>> getPlayerEligibilty() {
+        HashMap<Player, Integer> playerEligibility = new HashMap<>();
+        long currentSeason = 2;
+        Player playerQuery = new Player();
+        playerQuery.setSeasonId(currentSeason);
+        ArrayList<Player> players = (ArrayList<Player>) playerService.getquery(playerQuery);
+        players.forEach(player -> {
+            int gamesPlayed = gameService.getGamesByPlayer(player.getId())
+                    .stream()
+                    .filter(distinctByKey(Game::getMatch))
+                    .map(Game::getMatch)
+                    .toList().size();
+            player.setPlayoffEligible(gamesPlayed > 8);
+            playerEligibility.put(player, gamesPlayed);
+        });
+
+        return (!playerEligibility.isEmpty())? ResponseEntity.ok(playerEligibility): ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/stats/games/{id}")
