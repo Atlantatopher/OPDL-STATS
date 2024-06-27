@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Player")
-public class Player {
+public class Player implements Comparable<Player> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -143,5 +143,13 @@ public class Player {
                 ", isPlayoffEligible=" + isPlayoffEligible +
                 ", team=" + team +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Player otherPlayer) {
+        //System.out.println("Compare A.getWinPercentage: " + otherTeam.getWinPercentage());
+        //System.out.println("Compare B.getWinPercentage: " + getWinPercentage());
+        return getTeam().getTeamName().compareTo(otherPlayer.getTeam().getTeamName());
+
     }
 }

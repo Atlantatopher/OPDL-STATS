@@ -167,23 +167,31 @@ public class StatsController {
     }
 
     @GetMapping("/stats/players/eligible")
-    public ResponseEntity<HashMap<Player, Integer>> getPlayerEligibilty() {
-        HashMap<Player, Integer> playerEligibility = new HashMap<>();
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayerEligibilty() {
+        ArrayList<HashMap<String, String>> results = new ArrayList<>();
         long currentSeason = 2;
         Player playerQuery = new Player();
         playerQuery.setSeasonId(currentSeason);
         ArrayList<Player> players = (ArrayList<Player>) playerService.getquery(playerQuery);
+        Collections.sort(players);
         players.forEach(player -> {
+            if(player.getPlayerName().isBlank()){
+                return;
+            }
             int gamesPlayed = gameService.getGamesByPlayer(player.getId())
                     .stream()
                     .filter(distinctByKey(Game::getMatch))
                     .map(Game::getMatch)
                     .toList().size();
             player.setPlayoffEligible(gamesPlayed > 8);
-            playerEligibility.put(player, gamesPlayed);
+            HashMap<String, String> playerEligibility = new HashMap<>();
+            playerEligibility.put("PlayerName", player.getPlayerName());
+            playerEligibility.put("PlayerTeam", player.getTeam().getTeamName());
+            playerEligibility.put("MatchesPlayed", String.valueOf(gamesPlayed));
+            playerEligibility.put("isPlayoffEligible", String.valueOf(player.isPlayoffEligible()));
+            results.add(playerEligibility);
         });
-
-        return (!playerEligibility.isEmpty())? ResponseEntity.ok(playerEligibility): ResponseEntity.badRequest().build();
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/stats/games/{id}")
