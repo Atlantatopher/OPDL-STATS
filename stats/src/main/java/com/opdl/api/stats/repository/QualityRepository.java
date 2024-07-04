@@ -20,4 +20,13 @@ public interface QualityRepository extends JpaRepository<Quality, Long>, JpaSpec
     Optional<List<Quality>> findByMatch(Match match);
 
     Optional<List<Quality>> findByMatchAndPlayer(Match match, Player player);
+
+    Optional<List<Quality>> findBySeasonIdAndNumMark9GreaterThan(long seasonId, int marks);
+
+    Optional<List<Quality>> findBySeasonIdAndNumTon80GreaterThan(long seasonId, int marks);
+
+
+
+
 }
+

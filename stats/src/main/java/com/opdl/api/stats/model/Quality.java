@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Quality")
-public class Quality {
+public class Quality implements Comparable<Quality> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -59,6 +59,8 @@ public class Quality {
 
     @Transient
     private int total = 0;
+
+    public record numMark9ByPlayer(Player player, int numMark9) {}
 
     public Quality() {
     }
@@ -251,5 +253,10 @@ public class Quality {
                 ", numCork4=" + numCork4 +
                 ", numCork3=" + numCork3 +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Quality otherQuality) {
+        return Integer.compare(otherQuality.getTotal(), getTotal());
     }
 }

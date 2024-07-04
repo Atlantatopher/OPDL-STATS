@@ -3,16 +3,16 @@ package com.opdl.api.stats.controller;
 import com.opdl.api.stats.exception.ResourceNotFoundException;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Quality;
+import com.opdl.api.stats.model.Team;
 import com.opdl.api.stats.repository.QualityRepository;
 import com.opdl.api.stats.service.QualityService;
+import com.opdl.api.stats.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @CrossOrigin
 @RestController
@@ -24,6 +24,9 @@ public class QualityController {
 
     @Autowired
     private QualityService qualityService;
+
+    @Autowired
+    private TeamService teamService;
 
     // get all Quality points
     @GetMapping("/qualitys")
@@ -85,12 +88,112 @@ public class QualityController {
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/quality/team/{teamId}")
-    public ResponseEntity<List<Quality>> geTeamWithQuality(@PathVariable Long teamId){
-        List<Quality> results =  new ArrayList<Quality>();
+    @GetMapping("/quality/player")
+    public ResponseEntity<List<HashMap<String, String>>> getPlayersWithQuality(){
+        List<HashMap<String, String>> qualities =  new ArrayList<HashMap<String, String>>();
 
         try {
-            results = qualityService.getTeamWithQuality(teamId);
+            qualities = qualityService.getPlayersWithQuality(2);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        qualities.sort(new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                int intOne = Integer.parseInt(one.get("total"));
+                int intTwo = Integer.parseInt(two.get("total"));
+                return Integer.compare(intTwo, intOne);
+            }
+        });
+
+        return (!qualities.isEmpty())? ResponseEntity.ok(qualities): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/player/ninemark")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithNineMakrks(){
+        ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
+
+        try {
+            results = qualityService.getPlayersWithNineMark(2);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        results.sort(new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                int intOne = Integer.parseInt(one.get("total"));
+                int intTwo = Integer.parseInt(two.get("total"));
+                return Integer.compare(intTwo, intOne);
+            }
+        });
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/player/toneighty")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithTonEighty(){
+        ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
+
+        try {
+            results = qualityService.getPlayersWithTonEighty(2);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        results.sort(new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                int intOne = Integer.parseInt(one.get("total"));
+                int intTwo = Integer.parseInt(two.get("total"));
+                return Integer.compare(intTwo, intOne);
+            }
+        });
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/player/corks")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithCorks(){
+        ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
+
+        try {
+            results = qualityService.getPlayersWithCorks(2);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        results.sort(new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                int intOne = Integer.parseInt(one.get("total"));
+                int intTwo = Integer.parseInt(two.get("total"));
+                return Integer.compare(intTwo, intOne);
+            }
+        });
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/team")
+    public ResponseEntity<List<HashMap<String, String>>> getAllTeamsWithQuality(){
+        List<HashMap<String, String>> results = new ArrayList<>();
+        long currentSeason = 2;
+        Team  query = new Team();
+        query.setSeasonId(currentSeason);
+        List<Team> teams = teamService.getquery(query);
+        teams.forEach(team -> {
+            results.add(qualityService.calcutlateTeamQuality(team.getId()));
+        });
+        results.sort(new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                int teamOneTotal = Integer.parseInt(one.get("teamTotal"));
+                int teamTwoTotal = Integer.parseInt(two.get("teamTotal"));
+                return Integer.compare(teamTwoTotal, teamOneTotal);
+            }
+        });
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/quality/team/{teamId}")
+    public ResponseEntity<HashMap<String, String>> getTeamWithQuality(@PathVariable Long teamId){
+        HashMap<String, String> results = new HashMap<>();
+
+        try {
+            results = qualityService.calcutlateTeamQuality(teamId);
         } catch (ResourceNotFoundException e) {
             System.out.println(e.getMessage());
         }
