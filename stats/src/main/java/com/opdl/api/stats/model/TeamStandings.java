@@ -1,11 +1,9 @@
 package com.opdl.api.stats.model;
 
-import jakarta.persistence.*;
-
 import java.util.Objects;
 
+public class TeamStandings {
 
-public class TeamStandings implements Comparable<TeamStandings> {
     private Team team;
 
     private int score;
@@ -86,17 +84,5 @@ public class TeamStandings implements Comparable<TeamStandings> {
                 ", winPercentage=" + winPercentage +
                 ", numGamesBehind=" + numGamesBehind +
                 '}';
-    }
-
-    @Override
-    public int compareTo(TeamStandings otherTeam) {
-        //System.out.println("Compare A.getWinPercentage: " + otherTeam.getWinPercentage());
-        //System.out.println("Compare B.getWinPercentage: " + getWinPercentage());
-        int result = Double.compare(otherTeam.getWinPercentage(), getWinPercentage());
-        if ( result == 0 ) {
-            result = Integer.compare(otherTeam.getScore(), getScore());
-        }
-
-        return result;
     }
 }

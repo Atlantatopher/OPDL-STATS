@@ -1,11 +1,8 @@
 package com.opdl.api.stats.controller;
 
-import com.opdl.api.stats.exception.ResourceNotFoundException;
+import com.opdl.api.stats.comparator.StandingsComparator;
 import com.opdl.api.stats.model.*;
-import com.opdl.api.stats.service.GameService;
-import com.opdl.api.stats.service.MatchService;
-import com.opdl.api.stats.service.PlayerService;
-import com.opdl.api.stats.service.ScheduleService;
+import com.opdl.api.stats.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +30,10 @@ public class StatsController {
 
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private StandingsComparator standingsComparator;
+
 
     @PostMapping("/stats/standings/team")
     public ResponseEntity<List<TeamStandings>> getTeamStandings(@RequestBody StandingsQuery query){
@@ -90,9 +91,11 @@ public class StatsController {
                 System.out.println("No SCHEDULES found");
             }
         }
+
         ArrayList<TeamStandings> finalResults = new ArrayList<TeamStandings>();
         if(!results.isEmpty()){
-            Collections.sort(results);
+            Collections.sort(results, standingsComparator);
+
             int topScore = results.get(0).getScore();
             finalResults = (ArrayList<TeamStandings>) results.stream().map(teamStanding -> {
                 int curScore = teamStanding.getScore();
@@ -103,7 +106,7 @@ public class StatsController {
                 return teamStanding;
             }).collect(Collectors.toList());
         }
-        Collections.sort(finalResults);
+        Collections.sort(finalResults, standingsComparator);
         return (!finalResults.isEmpty())? ResponseEntity.ok(finalResults): ResponseEntity.badRequest().build();
     }
 
@@ -161,7 +164,6 @@ public class StatsController {
                 results.addAll(weeklyResults);
             }));
         }
-        //ArrayList<PlayerStats> finalResults = new ArrayList<PlayerStats>();
         Collections.sort(results);
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }

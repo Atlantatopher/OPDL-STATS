@@ -3,6 +3,7 @@ package com.opdl.api.stats.service;
 import com.opdl.api.stats.exception.ResourceNotFoundException;
 import com.opdl.api.stats.model.Game;
 import com.opdl.api.stats.model.Match;
+import com.opdl.api.stats.model.Team;
 import com.opdl.api.stats.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,18 @@ public class MatchService {
         }
         results = (ArrayList<Match>) results.stream().map(this::calculateScore).collect(Collectors.toList());
         return results;
+    }
+
+    public Match getHeadToHeadMatch(long seasonId, Team homeTeam, Team awayTeam){
+        Match result = new Match();
+        if(seasonId < 1 || homeTeam == null || awayTeam == null)
+                return result;
+        result = matchRepository.findBySeasonIdAndHomeTeamAndAwayTeam(seasonId, homeTeam, awayTeam).orElse(result);
+        if(result.getId() > 0){
+             calculateScore(result);
+        }
+
+        return result;
     }
 
     private Match calculateScore(Match match){
