@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @CrossOrigin
 @RestController
@@ -109,7 +108,7 @@ public class QualityController {
     }
 
     @GetMapping("/quality/player/ninemark")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithNineMakrks(){
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithNineMarks(){
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
 
         try {
