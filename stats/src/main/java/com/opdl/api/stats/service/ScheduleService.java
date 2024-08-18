@@ -44,7 +44,7 @@ public class ScheduleService {
         boolean hasWeekId = scheduleQuery.getWeekId() != 0;
 
         if(hasSeasonId && hasWeekId){
-            results.addAll(scheduleRepository.findBySeasonIdAndWeekIdLessThanEqualOrderById(scheduleQuery.getSeasonId(), scheduleQuery.getWeekId())
+            results.addAll(scheduleRepository.findBySeasonIdAndWeekIdLessThanEqualOrderByIdDesc(scheduleQuery.getSeasonId(), scheduleQuery.getWeekId())
                     .orElseThrow(() -> new ResourceNotFoundException("Schedule not exist with week id :" + scheduleQuery.getWeekId() + " and season id : " + scheduleQuery.getSeasonId())));
         } else if(hasSeasonId){
             results.addAll(scheduleRepository.findBySeasonIdOrderById(scheduleQuery.getSeasonId()).stream().findAny()

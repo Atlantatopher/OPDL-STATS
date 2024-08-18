@@ -12,7 +12,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Optional<List<Schedule>> findByWeekIdOrderById(long weekId);
 
-    Optional<List<Schedule>> findBySeasonIdAndWeekIdLessThanEqualOrderById(long seasonId, long weekId);
+    Optional<List<Schedule>> findBySeasonIdAndWeekIdLessThanEqualOrderByIdDesc(long seasonId, long weekId);
 
     Optional<Schedule> findBySeasonIdAndWeekIdOrderById(long seasonId, long weekId);
 }
