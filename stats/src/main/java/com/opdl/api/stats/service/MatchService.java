@@ -49,7 +49,7 @@ public class MatchService {
         Match result = new Match();
         if(seasonId < 1 || homeTeam == null || awayTeam == null)
                 return result;
-        result = matchRepository.findBySeasonIdAndHomeTeamAndAwayTeam(seasonId, homeTeam, awayTeam).orElse(result);
+        result = matchRepository.findBySeasonIdAndHomeTeamAndAwayTeamAndPostponedByEquals(seasonId, homeTeam, awayTeam, 0L).orElse(result);
         if(result.getId() > 0){
              calculateScore(result);
         }

@@ -13,7 +13,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     Optional<List<Match>> findBySeasonIdAndHomeTeamOrAwayTeam(long seasonId, Team homeTeam, Team awayTeam);
 
-    Optional<Match> findBySeasonIdAndHomeTeamAndAwayTeam(long seasonId, Team homeTeam, Team awayTeam);
+    Optional<Match> findBySeasonIdAndHomeTeamAndAwayTeamAndPostponedByEquals(long seasonId, Team homeTeam, Team awayTeam, long postponedBy);
 
     Optional<List<Match>> findBySeasonId(long seasonId);
 

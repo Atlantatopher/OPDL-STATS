@@ -2,6 +2,7 @@ package com.opdl.api.stats.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Objects;
 
@@ -24,6 +25,11 @@ public class Match {
 
     @OneToOne
     private Team awayTeam;
+
+    //This is the ID of the Team that initiated the postponement of the match.
+    @Column(name = "postponedBy")
+    @ColumnDefault("0")
+    private long postponedBy = 0L;
 
     @Transient
     private int homeScore;
@@ -102,17 +108,25 @@ public class Match {
         this.awayScore = awayScore;
     }
 
+    public long getPostponedBy() {
+        return postponedBy;
+    }
+
+    public void setPostponedBy(long postponedBy) {
+        this.postponedBy = postponedBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Match match = (Match) o;
-        return id == match.id && scheduleId == match.scheduleId && seasonId == match.seasonId && homeScore == match.homeScore && awayScore == match.awayScore && Objects.equals(homeTeam, match.homeTeam) && Objects.equals(awayTeam, match.awayTeam);
+        return id == match.id && scheduleId == match.scheduleId && seasonId == match.seasonId && postponedBy == match.postponedBy && homeScore == match.homeScore && awayScore == match.awayScore && Objects.equals(homeTeam, match.homeTeam) && Objects.equals(awayTeam, match.awayTeam);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, scheduleId, seasonId, homeTeam, awayTeam, homeScore, awayScore);
+        return Objects.hash(id, scheduleId, seasonId, homeTeam, awayTeam, postponedBy, homeScore, awayScore);
     }
 
     @Override
@@ -123,6 +137,7 @@ public class Match {
                 ", seasonId=" + seasonId +
                 ", homeTeam=" + homeTeam +
                 ", awayTeam=" + awayTeam +
+                ", postponedBy=" + postponedBy +
                 ", homeScore=" + homeScore +
                 ", awayScore=" + awayScore +
                 '}';

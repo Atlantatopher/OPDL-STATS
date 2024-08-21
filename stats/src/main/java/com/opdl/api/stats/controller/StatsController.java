@@ -59,6 +59,15 @@ public class StatsController {
                                     homeTeamEntry.setScore(homeTeamEntry.getScore() + game.getHomeScore());
                                     awayTeamEntry.setScore(awayTeamEntry.getScore() + game.getAwayScore());
                                 });
+                                homeTeamEntry.setScoreAdjusted(homeTeamEntry.getScore());
+                                if(match.getPostponedBy() > 0 && homeTeamEntry.getTeam().getId() == match.getPostponedBy()){
+                                    homeTeamEntry.setScoreAdjusted(homeTeamEntry.getScoreAdjusted()-3);
+                                }
+
+                                awayTeamEntry.setScoreAdjusted(awayTeamEntry.getScore());
+                                if(match.getPostponedBy() > 0 && awayTeamEntry.getTeam().getId() == match.getPostponedBy()){
+                                    awayTeamEntry.setScoreAdjusted(awayTeamEntry.getScoreAdjusted()-3);
+                                }
                             } else {
                                 System.out.println("No GAMES found");
                             }
@@ -68,11 +77,13 @@ public class StatsController {
                                 if(result.getTeam().getId() == homeTeamEntry.getTeam().getId()){
                                     result.setScore(result.getScore() + homeTeamEntry.getScore());
                                     result.setTotalGamesPlayed(result.getTotalGamesPlayed() + homeTeamEntry.getTotalGamesPlayed());
+                                    result.setScoreAdjusted(result.getScoreAdjusted()+ homeTeamEntry.getScoreAdjusted());
                                     foundHomeTeam.set(true);
                                 }
                                 else if(result.getTeam().getId() == awayTeamEntry.getTeam().getId()){
                                     result.setScore(result.getScore() + awayTeamEntry.getScore());
                                     result.setTotalGamesPlayed(result.getTotalGamesPlayed() + awayTeamEntry.getTotalGamesPlayed());
+                                    result.setScoreAdjusted(result.getScoreAdjusted()+ awayTeamEntry.getScoreAdjusted());
                                     foundAwayTeam.set(true);
                                 }
                             });
@@ -185,7 +196,7 @@ public class StatsController {
                     .filter(distinctByKey(Game::getMatch))
                     .map(Game::getMatch)
                     .toList().size();
-            player.setPlayoffEligible(gamesPlayed > 8);
+            player.setPlayoffEligible(player.isPlayoffEligible() || gamesPlayed > 8);
             HashMap<String, String> playerEligibility = new HashMap<>();
             playerEligibility.put("PlayerName", player.getPlayerName());
             playerEligibility.put("PlayerTeam", player.getTeam().getTeamName());

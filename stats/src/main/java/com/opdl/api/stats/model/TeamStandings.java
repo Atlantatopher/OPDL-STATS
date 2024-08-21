@@ -14,6 +14,8 @@ public class TeamStandings {
 
     private int numGamesBehind;
 
+    private int scoreAdjusted;
+
     public TeamStandings() {
     }
 
@@ -62,17 +64,25 @@ public class TeamStandings {
         this.numGamesBehind = numGamesBehind;
     }
 
+    public int getScoreAdjusted() {
+        return scoreAdjusted;
+    }
+
+    public void setScoreAdjusted(int scoreAdjusted) {
+        this.scoreAdjusted = scoreAdjusted;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TeamStandings that = (TeamStandings) o;
-        return score == that.score && totalGamesPlayed == that.totalGamesPlayed && Double.compare(winPercentage, that.winPercentage) == 0 && numGamesBehind == that.numGamesBehind && Objects.equals(team, that.team);
+        return score == that.score && totalGamesPlayed == that.totalGamesPlayed && Double.compare(winPercentage, that.winPercentage) == 0 && numGamesBehind == that.numGamesBehind && scoreAdjusted == that.scoreAdjusted && Objects.equals(team, that.team);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(team, score, totalGamesPlayed, winPercentage, numGamesBehind);
+        return Objects.hash(team, score, totalGamesPlayed, winPercentage, numGamesBehind, scoreAdjusted);
     }
 
     @Override
@@ -83,6 +93,7 @@ public class TeamStandings {
                 ", totalGamesPlayed=" + totalGamesPlayed +
                 ", winPercentage=" + winPercentage +
                 ", numGamesBehind=" + numGamesBehind +
+                ", scoreAdjusted=" + scoreAdjusted +
                 '}';
     }
 }

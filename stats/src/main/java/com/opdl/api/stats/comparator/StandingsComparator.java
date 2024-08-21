@@ -35,10 +35,8 @@ public class StandingsComparator implements Comparator <TeamStandings> {
      */
     @Override
     public int compare(TeamStandings team, TeamStandings otherTeam) {
-        int result = Double.compare(otherTeam.getWinPercentage(), team.getWinPercentage());
+        int result = Integer.compare(otherTeam.getScoreAdjusted(), team.getScoreAdjusted());
         if ( result == 0 ) {
-            result = Integer.compare(otherTeam.getScore(), team.getScore());
-        } if ( result == 0 ) {
             Match headToHeadMatch = matchService.getHeadToHeadMatch(team.getTeam().getSeasonId(), team.getTeam(), otherTeam.getTeam());
             if(team.getTeam() == headToHeadMatch.getHomeTeam()){
                 result = Integer.compare(headToHeadMatch.getAwayScore(), headToHeadMatch.getHomeScore());
