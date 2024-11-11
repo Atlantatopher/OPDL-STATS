@@ -1,12 +1,14 @@
 package com.opdl.api.stats.service;
 
 import com.opdl.api.stats.exception.ResourceNotFoundException;
+import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Team;
 import com.opdl.api.stats.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -44,6 +46,9 @@ public class TeamService {
         } else {
             // do we want to throw an error or return everything in teh DB. Not wanting to return everything in the DB.
         }
+
+        results.sort(Comparator.comparing((Team t) -> t.getHomeBar().getId())
+                .thenComparing(Team::getTeamName));
         return results;
     }
 }

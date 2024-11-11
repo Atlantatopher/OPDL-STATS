@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -57,9 +58,17 @@ public class PlayerService {
     }
 
     public List<Player> getPlayersForTeam(long  teamId) throws ResourceNotFoundException{
-        List<Player> results = new ArrayList<>();
         Specification<Player> spec = PlayerSpecifications.belongsToTeam(teamId);
-        results.addAll(playerRepository.findAll(spec));
+        return new ArrayList<>(playerRepository.findAll(spec));
+    }
+
+    public List<Player> getCaptains(long seasonId) throws ResourceNotFoundException{
+        Specification<Player> spec = PlayerSpecifications.isSeason(seasonId).and(PlayerSpecifications.isCaptain().or(PlayerSpecifications.isCoCaptain()));
+        List<Player> results = new ArrayList<>(playerRepository.findAll(spec));
+        results.sort(Comparator.comparing((Player p) -> p.getTeam().getHomeBar().getId())
+                .thenComparing(p -> p.getTeam().getTeamName())
+                .thenComparing(Player::getPlayerType));
+
         return results;
     }
 

@@ -115,4 +115,18 @@ public class PlayerController {
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
+
+    //Get Captains Info
+    @GetMapping("/captains/{seasonId}")
+    public ResponseEntity<List<Player>> getCaptainsInfo(@PathVariable Long seasonId){
+        List<Player> results =  new ArrayList<Player>();
+
+        try {
+            results = playerService.getCaptains(seasonId);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
 }

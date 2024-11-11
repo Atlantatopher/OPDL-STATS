@@ -25,4 +25,24 @@ public class PlayerSpecifications {
             return cb.equal(PlayersTeam.get("id"), teamId);
         };
     }
+
+    public static Specification<Player> isCaptain() {
+        return (root, query, cb) -> {
+            String role = "Captain";
+            return cb.equal(root.get("playerType"), role);
+        };
+    }
+
+    public static Specification<Player> isCoCaptain() {
+        return (root, query, cb) -> {
+            String role = "Co-Captain";
+            return cb.equal(root.get("playerType"), role);
+        };
+    }
+
+    public static Specification<Player> isSeason(long seasonId) {
+        return (root, query, cb) -> {
+            return cb.equal(root.get("seasonId"), seasonId);
+        };
+    }
 }
