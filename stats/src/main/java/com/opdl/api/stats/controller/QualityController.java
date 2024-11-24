@@ -92,14 +92,14 @@ public class QualityController {
         List<HashMap<String, String>> qualities =  new ArrayList<HashMap<String, String>>();
 
         try {
-            qualities = qualityService.getPlayersWithQuality(2);
+            qualities = qualityService.getPlayersWithQuality(3);
         } catch (ResourceNotFoundException e) {
             System.out.println(e.getMessage());
         }
         qualities.sort(new Comparator<HashMap<String, String>>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-                int intOne = Integer.parseInt(one.get("total"));
-                int intTwo = Integer.parseInt(two.get("total"));
+                int intOne = Integer.parseInt(Optional.ofNullable(one.get("total")).orElse("0"));
+                int intTwo = Integer.parseInt(Optional.ofNullable(two.get("total")).orElse("0"));
                 return Integer.compare(intTwo, intOne);
             }
         });
@@ -112,14 +112,15 @@ public class QualityController {
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
 
         try {
-            results = qualityService.getPlayersWithNineMark(2);
+            results = qualityService.getPlayersWithNineMark(3);
         } catch (ResourceNotFoundException e) {
             System.out.println(e.getMessage());
         }
         results.sort(new Comparator<HashMap<String, String>>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-                int intOne = Integer.parseInt(one.get("total"));
-                int intTwo = Integer.parseInt(two.get("total"));
+                if((null == one)||(null == two)) return 0;
+                int intOne = Integer.parseInt(Optional.ofNullable(one.get("total")).orElse("0"));
+                int intTwo = Integer.parseInt(Optional.ofNullable(two.get("total")).orElse("0"));
                 return Integer.compare(intTwo, intOne);
             }
         });
@@ -132,14 +133,15 @@ public class QualityController {
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
 
         try {
-            results = qualityService.getPlayersWithTonEighty(2);
+            results = qualityService.getPlayersWithTonEighty(3);
         } catch (ResourceNotFoundException e) {
             System.out.println(e.getMessage());
         }
         results.sort(new Comparator<HashMap<String, String>>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-                int intOne = Integer.parseInt(one.get("total"));
-                int intTwo = Integer.parseInt(two.get("total"));
+                if((null == one)||(null == two)) return 0;
+                int intOne = Integer.parseInt(Optional.ofNullable(one.get("total")).orElse("0"));
+                int intTwo = Integer.parseInt(Optional.ofNullable(two.get("total")).orElse("0"));
                 return Integer.compare(intTwo, intOne);
             }
         });
@@ -152,14 +154,15 @@ public class QualityController {
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
 
         try {
-            results = qualityService.getPlayersWithCorks(2);
+            results = qualityService.getPlayersWithCorks(3);
         } catch (ResourceNotFoundException e) {
             System.out.println(e.getMessage());
         }
         results.sort(new Comparator<HashMap<String, String>>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-                int intOne = Integer.parseInt(one.get("total"));
-                int intTwo = Integer.parseInt(two.get("total"));
+                if((null == one)||(null == two)) return 0;
+                int intOne = Integer.parseInt(Optional.ofNullable(one.get("total")).orElse("0"));
+                int intTwo = Integer.parseInt(Optional.ofNullable(two.get("total")).orElse("0"));
                 return Integer.compare(intTwo, intOne);
             }
         });
@@ -170,7 +173,7 @@ public class QualityController {
     @GetMapping("/quality/team")
     public ResponseEntity<List<HashMap<String, String>>> getAllTeamsWithQuality(){
         List<HashMap<String, String>> results = new ArrayList<>();
-        long currentSeason = 2;
+        long currentSeason = 3;
         Team  query = new Team();
         query.setSeasonId(currentSeason);
         List<Team> teams = teamService.getquery(query);
@@ -179,8 +182,9 @@ public class QualityController {
         });
         results.sort(new Comparator<HashMap<String, String>>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-                int teamOneTotal = Integer.parseInt(one.get("teamTotal"));
-                int teamTwoTotal = Integer.parseInt(two.get("teamTotal"));
+                if((null == one)||(null == two)) return 0;
+                int teamOneTotal = Integer.parseInt(Optional.ofNullable(one.get("teamTotal")).orElse("0"));
+                int teamTwoTotal = Integer.parseInt(Optional.ofNullable(two.get("teamTotal")).orElse("0"));
                 return Integer.compare(teamTwoTotal, teamOneTotal);
             }
         });
