@@ -31,6 +31,14 @@ public class PlayerController {
         return playerRepository.findAll();
     }
 
+    // get all Players
+    @GetMapping("/players/email")
+    public List<String> getAllPlayersEmail(){
+
+        List<Player> players =  playerRepository.findBySeasonId(3).orElse(new ArrayList<>());
+        return players.stream().map(Player::getEmailAddress).filter(email -> (null != email && !email.isBlank())).toList();
+    }
+
     @PostMapping("/registerPlayers")
     public List<Player> createPlayers(@RequestBody List<Player> players) {
         return playerRepository.saveAll(players);
