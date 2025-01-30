@@ -182,7 +182,7 @@ public class StatsController {
     @GetMapping("/stats/players/eligible")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayerEligibilty() {
         ArrayList<HashMap<String, String>> results = new ArrayList<>();
-        long currentSeason = 2;
+        long currentSeason = 3;
         Player playerQuery = new Player();
         playerQuery.setSeasonId(currentSeason);
         ArrayList<Player> players = (ArrayList<Player>) playerService.getquery(playerQuery);
@@ -196,7 +196,7 @@ public class StatsController {
                     .filter(distinctByKey(Game::getMatch))
                     .map(Game::getMatch)
                     .toList().size();
-            player.setPlayoffEligible(player.isPlayoffEligible() || gamesPlayed > 8);
+            player.setPlayoffEligible(player.isPlayoffEligible() || gamesPlayed > 7);
             HashMap<String, String> playerEligibility = new HashMap<>();
             playerEligibility.put("PlayerName", player.getPlayerName());
             playerEligibility.put("PlayerTeam", player.getTeam().getTeamName());
