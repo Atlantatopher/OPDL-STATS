@@ -26,15 +26,25 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    // get all Bars
+    // get all Teams
     @GetMapping("/teams")
     public List<Team> getAllTeams(){
         return teamRepository.findAll();
     }
 
+    @GetMapping("/teams/{seasonId}")
+    public List<Team> getAllTeamsBySeason(@PathVariable Long seasonId){
+        return teamRepository.findBySeasonIdOrderById(seasonId).orElse(new ArrayList<Team>());
+    }
+
     @PostMapping("/registerTeam")
     public Team createTeam(@RequestBody Team team) {
         return teamRepository.save(team);
+    }
+
+    @PostMapping("/registerTeams")
+    public List<Team> createTeam(@RequestBody ArrayList<Team> teams) {
+        return teamRepository.saveAll(teams);
     }
 
 
@@ -53,14 +63,14 @@ public class TeamController {
     }
 
     // get Team by id rest api
-    @GetMapping("/teams/{id}")
+    @GetMapping("/team/{id}")
     public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not exist with id :" + id));
         return ResponseEntity.ok(team);
     }
 
-    @PutMapping("/teams/{id}")
+    @PutMapping("/team/{id}")
     public ResponseEntity<Team> updateTeam(@PathVariable Long id, @RequestBody Team teamDetails){
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not exist with id :" + id));
@@ -74,7 +84,7 @@ public class TeamController {
     }
 
     // delete Team rest api
-    @DeleteMapping("/teams/{id}")
+    @DeleteMapping("/team/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteTeam(@PathVariable Long id){
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not exist with id :" + id));

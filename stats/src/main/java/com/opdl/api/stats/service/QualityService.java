@@ -166,15 +166,13 @@ public class QualityService {
         return totalQualityScore.get();
     }
 
-    public HashMap<String, String> calcutlateTeamQuality(long teamId) {
+    public HashMap<String, String> calcutlateTeamQuality(long teamId, String teamName) {
         HashMap<String, String> results = new HashMap<>();
         List<Quality> teamQuality = new ArrayList<Quality>();
         teamQuality = getTeamWithQuality(teamId);
-        if (teamQuality.isEmpty())
-            return results;
         AtomicInteger totalQuality = new AtomicInteger();
         results.put("teamId", String.valueOf(teamId));
-        results.put("teamName", teamQuality.get(1).getPlayer().getTeam().getTeamName());
+        results.put("teamName", teamName);
         teamQuality.forEach(quality -> {
             totalQuality.addAndGet(quality.getTotal());
         });

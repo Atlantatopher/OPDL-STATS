@@ -31,6 +31,11 @@ public class BarController {
         return barRepository.findAll();
     }
 
+    @GetMapping("/bars/{seasonId}")
+    public List<Bar> getAllBarsBySeasonId(@PathVariable Long seasonId){
+        return barRepository.findBySeasonId(seasonId).orElse(new ArrayList<Bar>());
+    }
+
     // get specified Bar
     @PostMapping("/bar")
     public ResponseEntity<List<Bar>> geBarByDetails(@RequestBody Bar bar){
@@ -51,15 +56,20 @@ public class BarController {
         return barRepository.save(bar);
     }
 
+    @PostMapping("/registerBars")
+    public List<Bar> createBars(@RequestBody ArrayList<Bar> bars) {
+        return barRepository.saveAll(bars);
+    }
+
     // get Bar by id rest api
-    @GetMapping("/bars/{id}")
+    @GetMapping("/bar/{id}")
     public ResponseEntity<Bar> getBarById(@PathVariable Long id) {
         Bar bar = barRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bar not exist with id :" + id));
         return ResponseEntity.ok(bar);
     }
 
-    @PutMapping("/bars/{id}")
+    @PutMapping("/bar/{id}")
     public ResponseEntity<Bar> updateBar(@PathVariable Long id, @RequestBody Bar barDetails){
         Bar bar = barRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bar not exist with id :" + id));
@@ -74,7 +84,7 @@ public class BarController {
     }
 
     // delete Bar rest api
-    @DeleteMapping("/bars/{id}")
+    @DeleteMapping("/bar/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteBar(@PathVariable Long id){
         Bar bar = barRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bar not exist with id :" + id));

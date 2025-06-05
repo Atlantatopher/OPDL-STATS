@@ -48,8 +48,8 @@ public class StandingsComparator implements Comparator <TeamStandings> {
             }
         } if ( result == 0 ) {
             // compare the two teams total quality points
-            HashMap<String, String> teamQuality = qualityService.calcutlateTeamQuality(team.getTeam().getId());
-            HashMap<String, String> otherTeamQuality = qualityService.calcutlateTeamQuality(otherTeam.getTeam().getId());
+            HashMap<String, String> teamQuality = qualityService.calcutlateTeamQuality(team.getTeam().getId(), team.getTeam().getTeamName());
+            HashMap<String, String> otherTeamQuality = qualityService.calcutlateTeamQuality(otherTeam.getTeam().getId(), team.getTeam().getTeamName());
             int teamQualityTotal = teamQuality.get("teamTotal") == null ? 0 : Integer.parseInt(teamQuality.get("teamTotal"));
             int otherTeamQualityTotal = otherTeamQuality.get("teamTotal") == null ? 0 : Integer.parseInt(otherTeamQuality.get("teamTotal"));
             result = Integer.compare(otherTeamQualityTotal, teamQualityTotal);

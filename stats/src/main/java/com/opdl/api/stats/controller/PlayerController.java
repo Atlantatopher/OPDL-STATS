@@ -34,8 +34,8 @@ public class PlayerController {
     // get all Players
     @GetMapping("/players/email")
     public List<String> getAllPlayersEmail(){
-
-        List<Player> players =  playerRepository.findBySeasonId(3).orElse(new ArrayList<>());
+        long seasonID = 4;
+        List<Player> players =  playerRepository.findBySeasonId(seasonID).orElse(new ArrayList<>());
         return players.stream().map(Player::getEmailAddress).filter(email -> (null != email && !email.isBlank())).toList();
     }
 
