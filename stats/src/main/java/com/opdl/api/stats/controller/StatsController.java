@@ -179,10 +179,31 @@ public class StatsController {
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
+    @GetMapping("/stats/standings/player/overall/{season_id}")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayerOverallStatsBySeason(@PathVariable Long season_id){
+        ArrayList<HashMap<String, String>> results = new ArrayList<>();
+        StandingsQuery query = new StandingsQuery();
+        query.setSeasonId(season_id);
+        List<PlayerStats> playerStats = getPlayerStats(query).getBody();
+        if (playerStats != null) {
+            playerStats.forEach(player -> {
+                if(null ==  player.getPlayer() || player.getPlayer().getPlayerName().isBlank() ){
+                    return;
+                }
+                HashMap<String, String> overallStats = new HashMap<>();
+                overallStats.put("PlayerName", player.getPlayer().getPlayerName());
+                overallStats.put("OverallPerc", String.valueOf(player.getOverall().getWinPercentage()));
+                results.add(overallStats);
+            });
+        }
+
+        return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
+    }
+
     @GetMapping("/stats/players/eligible")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayerEligibilty() {
         ArrayList<HashMap<String, String>> results = new ArrayList<>();
-        long currentSeason = 3;
+        long currentSeason = 5;
         Player playerQuery = new Player();
         playerQuery.setSeasonId(currentSeason);
         ArrayList<Player> players = (ArrayList<Player>) playerService.getquery(playerQuery);
