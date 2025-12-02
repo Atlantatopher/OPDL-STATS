@@ -29,7 +29,7 @@ public class ScheduleService {
             results.add(scheduleRepository.findBySeasonIdAndWeekIdOrderById(scheduleQuery.getSeasonId(), scheduleQuery.getWeekId())
                     .orElseThrow(() -> new ResourceNotFoundException("Schedule not exist with week id :" + scheduleQuery.getWeekId() + " and season id : " + scheduleQuery.getSeasonId())));
         } else if(hasSeasonId){
-            results.addAll(scheduleRepository.findBySeasonIdOrderById(scheduleQuery.getSeasonId()).stream().findAny()
+            results.addAll(scheduleRepository.findBySeasonIdOrderByWeekId(scheduleQuery.getSeasonId()).stream().findAny()
                     .orElseThrow(() -> new ResourceNotFoundException("Schedule not exist with season id : " + scheduleQuery.getSeasonId())));
         } else {
             // do we want to throw an error or return everything in teh DB. Not wanting to return everything in the DB.

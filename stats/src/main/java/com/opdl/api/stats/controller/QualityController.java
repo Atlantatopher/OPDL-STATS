@@ -90,7 +90,7 @@ public class QualityController {
     @GetMapping("/quality/player")
     public ResponseEntity<List<HashMap<String, String>>> getPlayersWithQuality(){
         List<HashMap<String, String>> qualities =  new ArrayList<HashMap<String, String>>();
-        long seasonId = 4;
+        long seasonId = 5;
         try {
             qualities = qualityService.getPlayersWithQuality(seasonId);
         } catch (ResourceNotFoundException e) {
@@ -110,7 +110,7 @@ public class QualityController {
     @GetMapping("/quality/player/ninemark")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithNineMarks(){
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
-        long seasonId = 4;
+        long seasonId = 5;
         try {
             results = qualityService.getPlayersWithNineMark(seasonId);
         } catch (ResourceNotFoundException e) {
@@ -131,7 +131,7 @@ public class QualityController {
     @GetMapping("/quality/player/toneighty")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithTonEighty(){
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
-        long seasonId = 4;
+        long seasonId = 5;
         try {
             results = qualityService.getPlayersWithTonEighty(seasonId);
         } catch (ResourceNotFoundException e) {
@@ -152,7 +152,7 @@ public class QualityController {
     @GetMapping("/quality/player/corks")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getPlayersWithCorks(){
         ArrayList<HashMap<String, String>> results =  new ArrayList<HashMap<String, String>>();
-        long seasonId = 4;
+        long seasonId = 5;
         try {
             results = qualityService.getPlayersWithCorks(seasonId);
         } catch (ResourceNotFoundException e) {

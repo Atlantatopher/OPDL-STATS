@@ -1,9 +1,11 @@
 package com.opdl.api.stats.controller;
 
 import com.opdl.api.stats.exception.ResourceNotFoundException;
+import com.opdl.api.stats.model.Bar;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.model.Player;
 import com.opdl.api.stats.repository.PlayerRepository;
+import com.opdl.api.stats.service.BarService;
 import com.opdl.api.stats.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,9 @@ public class PlayerController {
     @Autowired
     private PlayerService playerService;
 
+    @Autowired
+    private BarService barService;
+
     // get all Players
     @GetMapping("/players")
     public List<Player> getAllPlayers(){
@@ -33,10 +38,23 @@ public class PlayerController {
 
     // get all Players
     @GetMapping("/players/email")
-    public List<String> getAllPlayersEmail(){
-        long seasonID = 4;
+    public Map<String, String> getAllPlayersEmail(){
+        long seasonId = 5;
         List<Player> players =  playerRepository.findBySeasonId(seasonID).orElse(new ArrayList<>());
-        return players.stream().map(Player::getEmailAddress).filter(email -> (null != email && !email.isBlank())).toList();
+        Map<String, String> results = new HashMap<>();
+        players.stream().filter(player -> (null != player && null != player.getEmailAddress() && !player.getEmailAddress().isEmpty())).forEach(player -> { results.put(player.getEmailAddress(), player.getPlayerName());});
+        return results;
+    }
+
+    @GetMapping("/owners/email")
+    public Map<String, String> getAllOwnerEmail(){
+        long seasonId = 5;
+        Bar barQuery = new Bar();
+        barQuery.setSeasonId(seasonID);
+        List<Bar> owners =  barService.getquery(barQuery);
+        Map<String, String> results = new HashMap<>();
+        owners.stream().filter(owner -> (null != owner && null != owner.getEmailAddress() && !owner.getEmailAddress().isEmpty())).forEach(owner -> { results.put(owner. getEmailAddress(), owner.getOwnerName());});
+        return results;
     }
 
     @PostMapping("/registerPlayers")
