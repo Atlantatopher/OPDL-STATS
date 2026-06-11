@@ -39,7 +39,7 @@ public class PlayerController {
     // get all Players
     @GetMapping("/players/email")
     public Map<String, String> getAllPlayersEmail(){
-        long seasonId = 5;
+        long seasonId = 6;
         List<Player> players =  playerRepository.findBySeasonId(seasonId).orElse(new ArrayList<>());
         Map<String, String> results = new HashMap<>();
         players.stream().filter(player -> (null != player && null != player.getEmailAddress() && !player.getEmailAddress().isEmpty())).forEach(player -> { results.put(player.getEmailAddress(), player.getPlayerName());});
@@ -48,7 +48,7 @@ public class PlayerController {
 
     @GetMapping("/owners/email")
     public Map<String, String> getAllOwnerEmail(){
-        long seasonId = 5;
+        long seasonId = 6;
         Bar barQuery = new Bar();
         barQuery.setSeasonId(seasonId);
         List<Bar> owners =  barService.getquery(barQuery);
