@@ -19,6 +19,10 @@ public class StandingsQuery {
     public StandingsQuery() {
     }
 
+    public StandingsQuery(long seasonId) {
+        this.seasonId = seasonId;
+    }
+
     public StandingsQuery(long seasonId, int weekId, LocalDate matchDate, Team team, Player player) {
         this.seasonId = seasonId;
         this.weekId = weekId;

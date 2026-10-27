@@ -15,6 +15,9 @@ public class Player implements Comparable<Player> {
     @Column(name = "season_id")
     private long seasonId;
 
+    @Column(name = "universal_id")
+    private Long universalId;
+
     @Column(name = "player_name")
     private String playerName;
 
@@ -70,6 +73,14 @@ public class Player implements Comparable<Player> {
         this.seasonId = seasonId;
     }
 
+    public Long getUniversalId() {
+        return universalId;
+    }
+
+    public void setUniversalId(Long universalId) {
+        this.universalId = universalId;
+    }
+
     public String getPlayerName() {
         return playerName;
     }
@@ -123,12 +134,12 @@ public class Player implements Comparable<Player> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return id == player.id && seasonId == player.seasonId && isPlayoffEligible == player.isPlayoffEligible && Objects.equals(playerName, player.playerName) && Objects.equals(emailAddress, player.emailAddress) && Objects.equals(phoneNumber, player.phoneNumber) && Objects.equals(playerType, player.playerType) && Objects.equals(team, player.team);
+        return id == player.id && seasonId == player.seasonId && isPlayoffEligible == player.isPlayoffEligible && Objects.equals(universalId, player.universalId) && Objects.equals(playerName, player.playerName) && Objects.equals(emailAddress, player.emailAddress) && Objects.equals(phoneNumber, player.phoneNumber) && Objects.equals(playerType, player.playerType) && Objects.equals(team, player.team);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, seasonId, playerName, emailAddress, phoneNumber, playerType, isPlayoffEligible, team);
+        return Objects.hash(id, seasonId, universalId, playerName, emailAddress, phoneNumber, playerType, isPlayoffEligible, team);
     }
 
     @Override
@@ -136,6 +147,7 @@ public class Player implements Comparable<Player> {
         return "Player{" +
                 "id=" + id +
                 ", seasonId=" + seasonId +
+                ", universalId=" + universalId +
                 ", playerName='" + playerName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

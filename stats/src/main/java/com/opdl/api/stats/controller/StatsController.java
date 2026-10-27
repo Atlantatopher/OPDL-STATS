@@ -249,29 +249,118 @@ public class StatsController {
         return (!matches.isEmpty())? ResponseEntity.ok((ArrayList<Match>) matches): ResponseEntity.badRequest().build();
     }
 
-/*    @GetMapping("/stats/player/improved/{seasonId}")
+    @GetMapping("/stats/player/improved/{seasonId}")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getMostImprovedPlayer(@PathVariable Long seasonId) {
-        //Make sure Season ID is valid
-        if(seasonId < 1) return ResponseEntity.badRequest().build();
-        StandingsQuery queryLastSeason = new StandingsQuery(seasonId - 1);
-        StandingsQuery queryCurrentSeason = new StandingsQuery(seasonId);
-
-        //get players from requested season -1 that played the minimum # of matches ( 10 )
-        List<PlayerStats> lastSeasonStats = getPlayerStats(queryLastSeason).getBody();
-        //get players from requested season that played the minimum # of matches ( 10 )
-        List<PlayerStats> currSeasonStats = getPlayerStats(queryCurrentSeason).getBody();
-        //Filter out any player that did not play both seasons
-        if(Objects.requireNonNull(lastSeasonStats).isEmpty() || Objects.requireNonNull(currSeasonStats).isEmpty()) return ResponseEntity.badRequest().build();
-        currSeasonStats.retainAll(lastSeasonStats);
-
-        //return player with the highest positive difference between previous season and current season win %
-
-        List <Match> matches = games.stream().filter(distinctByKey(Game::getMatch)).map(Game::getMatch).collect(Collectors.toList());
-
-        System.out.println("Match Count: "+matches.size());
-        return (!matches.isEmpty())? ResponseEntity.ok((ArrayList<Match>) matches): ResponseEntity.badRequest().build();
+        if (seasonId == null || seasonId < 2) return ResponseEntity.badRequest().build();
+        ArrayList<HashMap<String, String>> results = getPlayerImprovements(seasonId).stream()
+                .filter(improvement -> improvement.difference() > 0.0)
+                .limit(3)
+                .map(this::toPlayerImprovementResult)
+                .collect(Collectors.toCollection(ArrayList::new));
+        return !results.isEmpty() ? ResponseEntity.ok(results) : ResponseEntity.badRequest().build();
     }
-*/
+
+    @GetMapping("/stats/player/improved/{seasonId}/{universalId}")
+    public ResponseEntity<HashMap<String, String>> getMostImprovedPlayer(
+            @PathVariable Long seasonId, @PathVariable Long universalId) {
+        if (seasonId == null || seasonId < 2 || universalId == null) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("Error", "Season ID must be at least 2 and universal ID must be provided");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        Optional<PlayerImprovement> playerImprovement = getPlayerImprovements(seasonId).stream()
+                .filter(improvement -> universalId.equals(improvement.stats().getPlayer().getUniversalId()))
+                .findFirst();
+        if (playerImprovement.isEmpty()) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("Error", "Player was not eligible or did not have stats in both seasons");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        PlayerImprovement improvement = playerImprovement.get();
+        if (improvement.difference() <= 0.0) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("Error", "Player did not improve season over season");
+            error.put("Improvement", String.valueOf(improvement.difference()));
+            return ResponseEntity.badRequest().body(error);
+        }
+        return ResponseEntity.ok(toPlayerImprovementResult(improvement));
+    }
+
+    private List<PlayerImprovement> getPlayerImprovements(Long seasonId) {
+        Optional<Schedule> lastSeasonSchedule = getLatestSchedule(seasonId - 1);
+        Optional<Schedule> currentSeasonSchedule = getLatestSchedule(seasonId);
+        if (lastSeasonSchedule.isEmpty() || currentSeasonSchedule.isEmpty()) return List.of();
+
+        StandingsQuery queryLastSeason = new StandingsQuery(seasonId - 1);
+        queryLastSeason.setWeekId((int) lastSeasonSchedule.get().getWeekId());
+        StandingsQuery queryCurrentSeason = new StandingsQuery(seasonId);
+        queryCurrentSeason.setWeekId((int) currentSeasonSchedule.get().getWeekId());
+
+        List<PlayerStats> lastSeasonStats = getPlayerStats(queryLastSeason).getBody();
+        List<PlayerStats> currSeasonStats = getPlayerStats(queryCurrentSeason).getBody();
+        if (lastSeasonStats == null || currSeasonStats == null) return List.of();
+
+        Map<Long, PlayerStats> eligibleLastSeason = lastSeasonStats.stream()
+                .filter(this::isEligiblePlayerWithUniversalId)
+                .collect(Collectors.toMap(
+                        stats -> stats.getPlayer().getUniversalId(),
+                        Function.identity(),
+                        (first, duplicate) -> first));
+
+        List<PlayerImprovement> improvements = new ArrayList<>();
+        for (PlayerStats currentStats : currSeasonStats) {
+            if (!isEligiblePlayerWithUniversalId(currentStats)) continue;
+
+            PlayerStats previousStats = eligibleLastSeason.get(currentStats.getPlayer().getUniversalId());
+            if (previousStats == null) continue;
+
+            double previousWinPercentage = previousStats.getOverall().getWinPercentage();
+            double currentWinPercentage = currentStats.getOverall().getWinPercentage();
+            if (!Double.isFinite(previousWinPercentage) || !Double.isFinite(currentWinPercentage)) continue;
+
+            double improvement = currentWinPercentage - previousWinPercentage;
+            improvements.add(new PlayerImprovement(currentStats, previousWinPercentage, currentWinPercentage, improvement));
+        }
+
+        return improvements.stream()
+                .sorted(Comparator.comparingDouble(PlayerImprovement::difference).reversed())
+                .toList();
+    }
+
+    private Optional<Schedule> getLatestSchedule(long seasonId) {
+        Schedule scheduleQuery = new Schedule();
+        scheduleQuery.setSeasonId(seasonId);
+        return scheduleService.getquery(scheduleQuery).stream()
+                .max(Comparator.comparing(
+                                Schedule::getMatchDate,
+                                Comparator.nullsFirst(Comparator.naturalOrder()))
+                        .thenComparingLong(Schedule::getWeekId));
+    }
+
+    private HashMap<String, String> toPlayerImprovementResult(PlayerImprovement improvement) {
+        PlayerStats currentStats = improvement.stats();
+        HashMap<String, String> playerResult = new HashMap<>();
+        playerResult.put("UniversalId", String.valueOf(currentStats.getPlayer().getUniversalId()));
+        playerResult.put("PlayerName", currentStats.getPlayer().getPlayerName());
+        playerResult.put("TeamName", currentStats.getTeam().getTeamName());
+        playerResult.put("PreviousOverallWinPercentage", String.valueOf(improvement.previousWinPercentage()));
+        playerResult.put("CurrentOverallWinPercentage", String.valueOf(improvement.currentWinPercentage()));
+        playerResult.put("Improvement", String.valueOf(improvement.difference()));
+        return playerResult;
+    }
+
+    private record PlayerImprovement(PlayerStats stats, double previousWinPercentage,
+                                     double currentWinPercentage, double difference) {}
+
+    private boolean isEligiblePlayerWithUniversalId(PlayerStats stats) {
+        return stats != null
+                && stats.getPlayer() != null
+                && stats.getPlayer().getUniversalId() != null
+                && stats.getPlayer().isPlayoffEligible();
+    }
+
     private Optional<List<Schedule>> getSchedules(StandingsQuery query){
         Schedule scheduleQuery = new Schedule();
         scheduleQuery.setSeasonId(query.getSeasonId());
