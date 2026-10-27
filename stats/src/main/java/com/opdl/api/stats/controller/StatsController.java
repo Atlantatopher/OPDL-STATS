@@ -207,6 +207,7 @@ public class StatsController {
         Player playerQuery = new Player();
         playerQuery.setSeasonId(currentSeason);
         ArrayList<Player> players = (ArrayList<Player>) playerService.getquery(playerQuery);
+        ArrayList<Player> eligiblePlayers = new ArrayList<>();
         Collections.sort(players);
         players.forEach(player -> {
             if(player.getPlayerName().isBlank()){
@@ -218,6 +219,9 @@ public class StatsController {
                     .map(Game::getMatch)
                     .toList().size();
             player.setPlayoffEligible(player.isPlayoffEligible() || gamesPlayed > 7);
+            if (player.isPlayoffEligible()) {
+                eligiblePlayers.add(player);
+            }
             HashMap<String, String> playerEligibility = new HashMap<>();
             playerEligibility.put("PlayerName", player.getPlayerName());
             playerEligibility.put("PlayerTeam", player.getTeam().getTeamName());
@@ -225,6 +229,7 @@ public class StatsController {
             playerEligibility.put("isPlayoffEligible", String.valueOf(player.isPlayoffEligible()));
             results.add(playerEligibility);
         });
+        playerService.saveAll(eligiblePlayers);
         return (!results.isEmpty())? ResponseEntity.ok(results): ResponseEntity.badRequest().build();
     }
 
@@ -244,6 +249,29 @@ public class StatsController {
         return (!matches.isEmpty())? ResponseEntity.ok((ArrayList<Match>) matches): ResponseEntity.badRequest().build();
     }
 
+/*    @GetMapping("/stats/player/improved/{seasonId}")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getMostImprovedPlayer(@PathVariable Long seasonId) {
+        //Make sure Season ID is valid
+        if(seasonId < 1) return ResponseEntity.badRequest().build();
+        StandingsQuery queryLastSeason = new StandingsQuery(seasonId - 1);
+        StandingsQuery queryCurrentSeason = new StandingsQuery(seasonId);
+
+        //get players from requested season -1 that played the minimum # of matches ( 10 )
+        List<PlayerStats> lastSeasonStats = getPlayerStats(queryLastSeason).getBody();
+        //get players from requested season that played the minimum # of matches ( 10 )
+        List<PlayerStats> currSeasonStats = getPlayerStats(queryCurrentSeason).getBody();
+        //Filter out any player that did not play both seasons
+        if(Objects.requireNonNull(lastSeasonStats).isEmpty() || Objects.requireNonNull(currSeasonStats).isEmpty()) return ResponseEntity.badRequest().build();
+        currSeasonStats.retainAll(lastSeasonStats);
+
+        //return player with the highest positive difference between previous season and current season win %
+
+        List <Match> matches = games.stream().filter(distinctByKey(Game::getMatch)).map(Game::getMatch).collect(Collectors.toList());
+
+        System.out.println("Match Count: "+matches.size());
+        return (!matches.isEmpty())? ResponseEntity.ok((ArrayList<Match>) matches): ResponseEntity.badRequest().build();
+    }
+*/
     private Optional<List<Schedule>> getSchedules(StandingsQuery query){
         Schedule scheduleQuery = new Schedule();
         scheduleQuery.setSeasonId(query.getSeasonId());

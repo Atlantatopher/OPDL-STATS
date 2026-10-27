@@ -50,6 +50,10 @@ public class PlayerService {
         return results;
     }
 
+    public List<Player> saveAll(List<Player> players) {
+        return playerRepository.saveAll(players);
+    }
+
     public List<Player> getPlayerWithQuality(long playerId) throws ResourceNotFoundException{
         List<Player> results = new ArrayList<>();
         Specification<Player> spec = PlayerSpecifications.hasPlayerWithQuality(playerId);
